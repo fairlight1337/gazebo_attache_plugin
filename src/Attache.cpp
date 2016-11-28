@@ -44,6 +44,10 @@ namespace gazebo {
       
       if((*itSetpoint).bHold == false) {
 	m_lstSetpoints.erase(itSetpoint);
+	
+	// Go back to the beginning as we changed the list (segfault
+	// prone otherwise)
+	itSetpoint = m_lstSetpoints.begin();
       }
     }
   }
