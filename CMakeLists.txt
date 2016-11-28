@@ -22,6 +22,7 @@ message(STATUS ${GAZEBO_LIBRARY_DIRS})
 include_directories(
   include
   /usr/local/include/gazebo-2.2
+  /usr/include/gazebo-2.2
   /usr/include/sdformat-1.4
   ${catkin_INCLUDE_DIRS})
   #${GAZEBO_INCLUDE_DIRS})
