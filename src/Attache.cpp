@@ -75,10 +75,12 @@ namespace gazebo {
       if(m_mapJoints[strLink1].find(strLink2) != m_mapJoints[strLink1].end()) {
 	physics::JointPtr jpJoint = m_mapJoints[strLink1][strLink2];
 	
-	jpJoint->Detach();
-	jpJoint->Update();
-	jpJoint->Reset();
-	jpJoint->Fini();
+	if(jpJoint) {
+	  jpJoint->Detach();
+	  jpJoint->Update();
+	  jpJoint->Reset();
+	  jpJoint->Fini();
+	}
 	
 	m_mapJoints[strLink1].erase(strLink2);
 	
