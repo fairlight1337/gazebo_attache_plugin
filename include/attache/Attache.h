@@ -24,6 +24,7 @@
 // Attache Messages
 #include <attache_msgs/Attachment.h>
 #include <attache_msgs/JointControl.h>
+#include <attache_msgs/JointSetLimits.h>
 #include <attache_msgs/JointInformation.h>
 #include <gazebo/msgs/joint_cmd.pb.h>
 
@@ -72,12 +73,16 @@ namespace gazebo {
     bool serviceSetJoint(attache_msgs::JointControl::Request &req, attache_msgs::JointControl::Response &res);
     bool serviceGetJoint(attache_msgs::JointInformation::Request &req, attache_msgs::JointInformation::Response &res);
     
+    bool serviceSetJointLimits(attache_msgs::JointSetLimits::Request &req, attache_msgs::JointSetLimits::Response &res);
+    
     std::string title(bool bFailed = false);
     
     gazebo::physics::JointPtr modelJointForName(std::string strModel, std::string strJoint);
     gazebo::physics::ModelPtr modelForName(std::string strModel);
     bool setJointPosition(std::string strModel, std::string strJoint, float fPosition);
     bool getJointPosition(std::string strModel, std::string strJoint, float& fPosition, float& fMin, float& fMax);
+    
+    bool setJointLimits(std::string strModel, std::string strJoint, float fLower, float fUpper);
   };
   
   GZ_REGISTER_WORLD_PLUGIN(Attache)

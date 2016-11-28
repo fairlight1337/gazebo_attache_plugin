@@ -17,6 +17,7 @@ namespace gazebo {
     
     // Joint Control
     m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_control", &Attache::serviceSetJoint, this);
+    m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_set_limits", &Attache::serviceSetJointLimits, this);
     m_srvJointInformation = m_nhHandle.advertiseService<Attache>("joint_information", &Attache::serviceGetJoint, this);
     
     this->m_cpUpdateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&Attache::OnUpdate, this, _1));
@@ -179,6 +180,33 @@ namespace gazebo {
       
       this->addJointSetpoint({req.model, req.joint, req.position, req.hold_position ? true : false});
       res.success = true;
+    } else {
+      res.success = false;
+    }
+    
+    return true;
+  }  
+  
+  bool Attache::setJointLimits(std::string strModel, std::string strJoint, float fLower, float fUpper) {
+    gazebo::physics::ModelPtr mpModel = this->modelForName(strModel);
+    
+    if(mpModel) {
+      gazebo::physics::JointPtr jpJoint = this->modelJointForName(strModel, strJoint);
+      
+      if(jpJoint) {
+	jpJoint->SetLowStop(0, fLower);
+	jpJoint->SetHighStop(0, fUpper);
+      }
+    }
+    
+    return false;
+  }
+  
+  bool Attache::serviceSetJointLimits(attache_msgs::JointSetLimits::Request &req, attache_msgs::JointSetLimits::Response &res) {
+    if(req.model != "" && req.joint != "") {
+      std::cout << this->title() << " Set limits for joint '" << req.model << "." << req.joint << "' = [" << req.lower << ", " << req.upper << "]" << std::endl;
+      
+      res.success = this->setJointLimits(req.model, req.joint, req.lower, req.upper);
     } else {
       res.success = false;
     }
