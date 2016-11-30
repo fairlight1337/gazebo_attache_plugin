@@ -46,6 +46,7 @@ namespace gazebo {
     ros::ServiceServer m_srvAttach;
     ros::ServiceServer m_srvDetach;
     ros::ServiceServer m_srvJointControl;
+    ros::ServiceServer m_srvJointSetLimits;
     ros::ServiceServer m_srvJointInformation;
     
     physics::WorldPtr m_wpWorld;
