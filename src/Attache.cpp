@@ -17,7 +17,7 @@ namespace gazebo {
     
     // Joint Control
     m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_control", &Attache::serviceSetJoint, this);
-    m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_set_limits", &Attache::serviceSetJointLimits, this);
+    m_srvJointSetLimits = m_nhHandle.advertiseService<Attache>("joint_set_limits", &Attache::serviceSetJointLimits, this);
     m_srvJointInformation = m_nhHandle.advertiseService<Attache>("joint_information", &Attache::serviceGetJoint, this);
     
     this->m_cpUpdateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&Attache::OnUpdate, this, _1));
