@@ -32,15 +32,20 @@ namespace gazebo {
     
     for(std::list<JointSetpoint>::iterator itSetpoint = m_lstSetpoints.begin();
 	itSetpoint != m_lstSetpoints.end(); ++itSetpoint) {
-      this->setJointPosition((*itSetpoint).strModel, (*itSetpoint).strJoint, (*itSetpoint).fPosition);
-      
-      gazebo::physics::ModelPtr mpModel = this->modelForName((*itSetpoint).strModel);
-      if(mpModel) {
-	gazebo::physics::JointControllerPtr jcpController = mpModel->GetJointController();
+      if(this->setJointPosition((*itSetpoint).strModel, (*itSetpoint).strJoint, (*itSetpoint).fPosition)) {
+	gazebo::physics::ModelPtr mpModel = this->modelForName((*itSetpoint).strModel);
 	
-	if(jcpController) {
-	  jcpController->Update();
+	if(mpModel) {
+	  gazebo::physics::JointControllerPtr jcpController = mpModel->GetJointController();
+	  
+	  if(jcpController) {
+	    jcpController->Update();
+	  }
 	}
+      } else {
+	// The joint didn't exist; we'll delete it from the list to
+	// not iterate through it again.
+	(*itSetpoint).bHold = false;
       }
       
       if((*itSetpoint).bHold == false) {
