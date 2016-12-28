@@ -227,11 +227,11 @@ namespace gazebo {
     for(std::map<std::string, std::map<std::string, physics::JointPtr>>::iterator itFrom = m_mapJoints.begin();
 	itFrom != m_mapJoints.end(); ++itFrom) {
       attache_msgs::AttachmentConnection acConnection;
-      acConnection.from = itFrom->first;
+      acConnection.c_from = itFrom->first;
       
       for(std::map<std::string, physics::JointPtr>::iterator itTo = itFrom->second.begin();
 	  itTo != itFrom->second.end(); ++itTo) {
-	acConnection.to.push_back(itTo->first);
+	acConnection.c_to.push_back(itTo->first);
       }
       
       res.connections.push_back(acConnection);
