@@ -26,6 +26,10 @@
 #include <attache_msgs/JointControl.h>
 #include <attache_msgs/JointSetLimits.h>
 #include <attache_msgs/JointInformation.h>
+#include <attache_msgs/JointConnection.h>
+#include <attache_msgs/JointsList.h>
+
+// Gazebo includes
 #include <gazebo/msgs/joint_cmd.pb.h>
 
 
@@ -40,7 +44,8 @@ namespace gazebo {
     } JointSetpoint;
     
   private:
-    std::map< std::string, std::map<std::string, physics::JointPtr> > m_mapJoints; 
+    static std::string s_strVersionString;
+    std::map<std::string, std::map<std::string, physics::JointPtr>> m_mapJoints; 
     
     ros::NodeHandle m_nhHandle;
     ros::ServiceServer m_srvAttach;
@@ -48,6 +53,7 @@ namespace gazebo {
     ros::ServiceServer m_srvJointControl;
     ros::ServiceServer m_srvJointSetLimits;
     ros::ServiceServer m_srvJointInformation;
+    ros::ServiceServer m_srvJointsList;
     
     physics::WorldPtr m_wpWorld;
     event::ConnectionPtr m_cpUpdateConnection;
@@ -73,8 +79,10 @@ namespace gazebo {
     
     bool serviceSetJoint(attache_msgs::JointControl::Request &req, attache_msgs::JointControl::Response &res);
     bool serviceGetJoint(attache_msgs::JointInformation::Request &req, attache_msgs::JointInformation::Response &res);
-    
+
     bool serviceSetJointLimits(attache_msgs::JointSetLimits::Request &req, attache_msgs::JointSetLimits::Response &res);
+
+    bool serviceGetJointsList(attache_msgs::JointsList::Request &req, attache_msgs::JointsList::Response &res);
     
     std::string title(bool bFailed = false);
     

@@ -2,6 +2,9 @@
 
 
 namespace gazebo {
+  std::string Attache::s_strVersionString = "0.6.0";
+  
+  
   Attache::Attache() : m_nhHandle("~") {
   }
   
@@ -19,10 +22,11 @@ namespace gazebo {
     m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_control", &Attache::serviceSetJoint, this);
     m_srvJointSetLimits = m_nhHandle.advertiseService<Attache>("joint_set_limits", &Attache::serviceSetJointLimits, this);
     m_srvJointInformation = m_nhHandle.advertiseService<Attache>("joint_information", &Attache::serviceGetJoint, this);
+    m_srvJointsList = m_nhHandle.advertiseService<Attache>("joints_list", &Attache::serviceGetJointsList, this);
     
     this->m_cpUpdateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&Attache::OnUpdate, this, _1));
     
-    std::cout << this->title() << " Attache plugin loaded" << std::endl;
+    std::cout << this->title() << " Attaché plugin loaded (version " << s_strVersionString << ") Jan Winkler <winkler@cs.uni-bremen.de>" << std::endl;
   }
   
   void Attache::OnUpdate(const common::UpdateInfo &uiInfo) {
@@ -219,6 +223,23 @@ namespace gazebo {
     return true;
   }  
   
+  bool Attache::serviceGetJointsList(attache_msgs::JointsList::Request &req, attache_msgs::JointsList::Response &res) {
+    for(std::map<std::string, std::map<std::string, physics::JointPtr>>::iterator itJC = m_mapJoints.begin();
+	itJC != m_mapJoints.end(); ++itJC) {
+      attache_msgs::JointConnection jcConnection;
+      jcConnection.modellink = itJC->first;
+      
+      for(std::map<std::string, physics::JointPtr>::iterator itConnected = itJC->second.begin();
+	  itConnected != itJC->second.end(); ++itConnected) {
+	jcConnection.connected_modellinks.push_back(itConnected->first);
+      }
+      
+      res.connections.push_back(jcConnection);
+    }
+    
+    return true;
+  }
+  
   bool Attache::serviceGetJoint(attache_msgs::JointInformation::Request &req, attache_msgs::JointInformation::Response &res) {
     if(req.model != "" && req.joint != "") {
       res.success = this->getJointPosition(req.model, req.joint, res.position, res.min, res.max);
@@ -231,9 +252,9 @@ namespace gazebo {
   
   std::string Attache::title(bool bFailed) {
     if(bFailed) {
-      return "\033[1;31m[Attache]\033[0m";
+      return "\033[1;31m[Attaché]\033[0m";
     } else {
-      return "\033[1;37m[Attache]\033[0m";
+      return "\033[1;37m[Attaché]\033[0m";
     }
   }
   
