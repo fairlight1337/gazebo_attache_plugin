@@ -17,12 +17,12 @@ namespace gazebo {
     // Attachment
     m_srvAttach = m_nhHandle.advertiseService<Attache>("attach", &Attache::serviceAttach, this);
     m_srvDetach = m_nhHandle.advertiseService<Attache>("detach", &Attache::serviceDetach, this);
+    m_srvAttachmentsList = m_nhHandle.advertiseService<Attache>("attachments", &Attache::serviceGetAttachmentsList, this);
     
     // Joint Control
     m_srvJointControl = m_nhHandle.advertiseService<Attache>("joint_control", &Attache::serviceSetJoint, this);
     m_srvJointSetLimits = m_nhHandle.advertiseService<Attache>("joint_set_limits", &Attache::serviceSetJointLimits, this);
     m_srvJointInformation = m_nhHandle.advertiseService<Attache>("joint_information", &Attache::serviceGetJoint, this);
-    m_srvJointsList = m_nhHandle.advertiseService<Attache>("joints_list", &Attache::serviceGetJointsList, this);
     
     this->m_cpUpdateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&Attache::OnUpdate, this, _1));
     
@@ -223,18 +223,18 @@ namespace gazebo {
     return true;
   }  
   
-  bool Attache::serviceGetJointsList(attache_msgs::JointsList::Request &req, attache_msgs::JointsList::Response &res) {
-    for(std::map<std::string, std::map<std::string, physics::JointPtr>>::iterator itJC = m_mapJoints.begin();
-	itJC != m_mapJoints.end(); ++itJC) {
-      attache_msgs::JointConnection jcConnection;
-      jcConnection.modellink = itJC->first;
+  bool Attache::serviceGetAttachmentsList(attache_msgs::AttachmentsList::Request &req, attache_msgs::AttachmentsList::Response &res) {
+    for(std::map<std::string, std::map<std::string, physics::JointPtr>>::iterator itFrom = m_mapJoints.begin();
+	itFrom != m_mapJoints.end(); ++itFrom) {
+      attache_msgs::AttachmentConnection acConnection;
+      acConnection.from = itFrom->first;
       
-      for(std::map<std::string, physics::JointPtr>::iterator itConnected = itJC->second.begin();
-	  itConnected != itJC->second.end(); ++itConnected) {
-	jcConnection.connected_modellinks.push_back(itConnected->first);
+      for(std::map<std::string, physics::JointPtr>::iterator itTo = itFrom->second.begin();
+	  itTo != itFrom->second.end(); ++itTo) {
+	acConnection.to.push_back(itTo->first);
       }
       
-      res.connections.push_back(jcConnection);
+      res.connections.push_back(acConnection);
     }
     
     return true;
